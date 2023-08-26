@@ -4,15 +4,67 @@ import React from "react";
 import AuthFormContainer from "@components/AuthFormContainer";
 import { Button, Input } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useFormik } from "formik";
+import * as yup from "yup";
+
+const validationSchema = yup.object().shape({
+  name: yup.string().required("Name is required"),
+  email: yup.string().email("Invalid Email").required("Email is required!"),
+  password: yup
+    .string()
+    .min(6, "Password must be 6 characters long.")
+    .required("Password is required"),
+});
 
 export default function SignUp() {
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    isSubmitting,
+    errors,
+    touched,
+  } = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      console.log(values);
+      // alert(JSON.stringify(values, null, 2));
+    },
+  });
   const formErrors: string[] = [];
+  console.log(errors);
 
+  const { email, name, password } = values;
   return (
-    <AuthFormContainer title="Create New Account">
-      <Input name="name" label="Name" crossOrigin={undefined}/>
-      <Input name="email" label="Email" crossOrigin={undefined}/>
-      <Input name="password" label="Password" type="password" crossOrigin={undefined} />
+    <AuthFormContainer title="Create New Account" onSubmit={handleSubmit}>
+      <Input
+        name="name"
+        label="Name"
+        crossOrigin={undefined}
+        onChange={handleChange}
+        value={name}
+      />
+      <Input
+        name="email"
+        label="Email"
+        crossOrigin={undefined}
+        onChange={handleChange}
+        value={email}
+      />
+      <Input
+        name="password"
+        label="Password"
+        type="password"
+        crossOrigin={undefined}
+        onChange={handleChange}
+        value={password}
+      />
       <Button type="submit" className="w-full">
         Sign up
       </Button>
