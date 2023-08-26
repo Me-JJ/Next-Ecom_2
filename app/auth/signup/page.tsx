@@ -6,6 +6,7 @@ import { Button, Input } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { filterFormikErrors } from "@/app/utils/formikHelpers";
 
 const validationSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
@@ -32,15 +33,29 @@ export default function SignUp() {
       password: "",
     },
     validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
-      // alert(JSON.stringify(values, null, 2));
+    onSubmit: async (values, action) => {
+      action.setSubmitting(true);
+      await fetch("/api/users", {
+        method: "POST",
+        body: JSON.stringify(values),
+      })
+        .then(async (res) => {
+          if (res.ok) {
+            const result = await res.json();
+            console.log(result);
+          }
+          action.setSubmitting(false);
+        })
+        .catch((err) => {
+          console.log("signup->", err);
+        });
     },
   });
-  const formErrors: string[] = [];
-  console.log(errors);
+
+  const formErrors: string[] = filterFormikErrors(errors, touched, values);
 
   const { email, name, password } = values;
+
   return (
     <AuthFormContainer title="Create New Account" onSubmit={handleSubmit}>
       <Input
@@ -48,6 +63,7 @@ export default function SignUp() {
         label="Name"
         crossOrigin={undefined}
         onChange={handleChange}
+        onBlur={handleBlur}
         value={name}
       />
       <Input
@@ -55,6 +71,7 @@ export default function SignUp() {
         label="Email"
         crossOrigin={undefined}
         onChange={handleChange}
+        onBlur={handleBlur}
         value={email}
       />
       <Input
@@ -63,9 +80,10 @@ export default function SignUp() {
         type="password"
         crossOrigin={undefined}
         onChange={handleChange}
+        onBlur={handleBlur}
         value={password}
       />
-      <Button type="submit" className="w-full">
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
         Sign up
       </Button>
       <div className="">
