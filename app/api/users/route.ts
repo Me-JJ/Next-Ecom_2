@@ -7,7 +7,6 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 
 export const POST = async (req: Request) => {
-  console.log(req.body);
   const body = (await req.json()) as NewUserRequest;
   await startDb();
   const newUser = await UserModel.create({
@@ -36,5 +35,5 @@ export const POST = async (req: Request) => {
     html: `<h1>Please verify your email by clicking on <a href="${verificationURL}">this link</a></hi>`,
   });
 
-  return NextResponse.json(newUser);
+  return NextResponse.json({ message: "Please check your email!" });
 };

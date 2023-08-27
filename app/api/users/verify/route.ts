@@ -3,7 +3,7 @@ import UserModel from "@/app/models/userModel";
 import { EmailVerifyRequest } from "@/app/types";
 import { isValidObjectId } from "mongoose";
 import { NextResponse } from "next/server";
-
+//this route serves the email link token & user_id send through searchParams
 export const POST = async (req: Request) => {
   try {
     const { token, userId } = (await req.json()) as EmailVerifyRequest;
@@ -29,8 +29,11 @@ export const POST = async (req: Request) => {
       );
     }
 
+    //user is now verified
     await UserModel.findByIdAndUpdate(userId, { verified: true });
+    //delete token and render / page
     await EmailVerificationToken.findByIdAndDelete(verifyToken._id);
+
     return NextResponse.json({ message: "Your email is verified" });
   } catch (error) {
     return NextResponse.json(
