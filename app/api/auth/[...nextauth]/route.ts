@@ -8,7 +8,7 @@ const authOptions: NextAuthOptions = {
       name: "Creds",
       credentials: {},
       async authorize(credentials, req) {
-        console.log("route next-auth->", credentials);
+        // console.log("route next-auth->", credentials);
 
         const { email, password } = credentials as SignInCredentials;
         //send req to you api route to sign in and send err n success
@@ -20,7 +20,9 @@ const authOptions: NextAuthOptions = {
           }
         ).then(async (res) => await res.json());
 
-        if (error) throw new Error(error);
+        if (error) {
+          return null;
+        }
 
         return { id: user.id };
       },

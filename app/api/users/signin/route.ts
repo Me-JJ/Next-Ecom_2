@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export const POST = async (req: Request) => {
   const { email, password } = (await req.json()) as SignInCredentials;
 
-  console.log("route signin->", email, password);
+  // console.log("route signin->", email, password);
   if (!email || !password)
     return NextResponse.json({
       error: "Invalid request, email and password are missing",
