@@ -9,7 +9,7 @@ interface Props {
 
 export default function GuestLayout({ children }: Props) {
   const { data: session } = useSession();
-  console.log("session -=--=->", session);
+  // console.log("session -=--=->", session);
   if (session) {
     return redirect("/");
   }

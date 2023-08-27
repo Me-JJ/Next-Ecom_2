@@ -1,3 +1,4 @@
+import startDb from "@/app/lib/db";
 import EmailVerificationToken from "@/app/models/emailVerificationToken";
 import UserModel from "@/app/models/userModel";
 import { EmailVerifyRequest } from "@/app/types";
@@ -15,6 +16,7 @@ export const POST = async (req: Request) => {
       );
     }
 
+    await startDb();
     const verifyToken = await EmailVerificationToken.findOne({ user: userId });
 
     if (!verifyToken) {
