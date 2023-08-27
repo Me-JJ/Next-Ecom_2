@@ -21,6 +21,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function SignIn() {
+  const router = useRouter();
   const {
     values,
     isSubmitting,
@@ -37,13 +38,9 @@ export default function SignIn() {
         ...values,
         redirect: false,
       });
-
+      // console.log("signInres->",signInRes);
       if (signInRes?.error === "CredentialsSignin") {
         toast.error("Email/Password mismatch!");
-      }
-
-      if (!signInRes?.error) {
-        useRouter().refresh();
       }
     },
   });

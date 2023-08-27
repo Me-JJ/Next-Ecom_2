@@ -1,3 +1,4 @@
+// export { GET, POST } from "@/auth";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { SignInCredentials } from "@app/types";
@@ -23,11 +24,25 @@ const authOptions: NextAuthOptions = {
         if (error) {
           return null;
         }
-
-        return { id: user.id };
+        return { id: user.id, ...user };
       },
     }),
   ],
+  callbacks: {
+    async jwt(params) {
+      if (params.user) {
+        params.token.user = params.user;
+      }
+      return params.token;
+    },
+    async session(params) {
+      const user = params.token.user;
+      if (user) {
+        params.session.user = { ...params.session.user, ...user };
+      }
+      return params.session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
