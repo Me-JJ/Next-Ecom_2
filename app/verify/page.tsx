@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { notFound, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
 
 interface Props {
   searchParams: { token: string; userId: string };
@@ -18,16 +19,15 @@ export default function Verify(props: Props) {
       method: "POST",
       body: JSON.stringify({ token, userId }),
     }).then(async (res) => {
-      // console.log("useeffect ->", res);
       const apiRes = await res.json();
       const { error, message } = apiRes as { message: string; error: string };
       if (res.ok) {
         toast.success(message);
-        router.replace("/");
       }
       if (!res.ok && error) {
         toast.error(error);
       }
+      router.replace("/");
     });
   }, []);
   if (!token || !userId) return notFound();

@@ -6,6 +6,7 @@ import crypto from "crypto";
 import nodemailer from "nodemailer";
 import startDb from "@/app/lib/db";
 import { isValidObjectId } from "mongoose";
+import { sendEmail } from "@/app/lib/email";
 
 export const POST = async (req: Request) => {
   try {
@@ -51,19 +52,9 @@ export const POST = async (req: Request) => {
 
     await PasswordResetTokenModel.findByIdAndDelete(resetToken._id);
 
-    const transport = nodemailer.createTransport({
-      host: "sandbox.smtp.mailtrap.io",
-      port: 2525,
-      auth: {
-        user: "5b80522c7dafe0",
-        pass: "1f214d2315665f",
-      },
-    });
-    const link = "http://localhost:3000/auth/signin";
-    await transport.sendMail({
-      from: "verification@nextecom.com",
-      to: user.email,
-      html: `<h1>Your Password is updated successfully!</h1>.<a href=${link}> Login to your account`,
+    await sendEmail({
+      profile: { name: user.name, email: user.email },
+      subject: "password-changed",
     });
 
     return NextResponse.json({
