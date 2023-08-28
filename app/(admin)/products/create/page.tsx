@@ -1,9 +1,9 @@
-import ProductTable from "@/app/components/ProductTable";
+import ProductForm from "@/app/components/ProductForm";
 import React from "react";
 export default function Create() {
   return (
     <div>
-      <ProductTable />
+      <ProductForm />
     </div>
   );
 }
