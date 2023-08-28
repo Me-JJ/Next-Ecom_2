@@ -11,11 +11,11 @@ interface Auth {
 export default function useAuth(): Auth {
   const session = useSession();
 
-  // console.log("useAuth->", session);
+  console.log("useAuth->", session);
   return {
     loading: session.status === "loading",
     loggedIn: session.status === "authenticated",
-    isAdmin: false,
+    isAdmin: session.data?.user.role === "admin",
     profile: session.data?.user,
   };
 }

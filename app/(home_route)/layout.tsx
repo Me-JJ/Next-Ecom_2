@@ -8,14 +8,9 @@ interface Props {
   children: ReactNode;
 }
 
-export default function GuestLayout({ children }: Props) {
-  const { data: session } = useSession();
-  // console.log("session -=--=->", session);
-  if (session) {
-    return redirect("/");
-  }
+export default function HomeLayout({ children }: Props) {
   return (
-    <div>
+    <div className="max-w-screen-xl mx-auto xl:p-0">
       <Navbar />
       {children}
     </div>
