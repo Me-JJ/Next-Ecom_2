@@ -13,6 +13,8 @@ const SelectedImageThumb = ({ src }: Props) => {
         src={src}
         alt="product"
         fill
+        priority={true}
+        sizes="5rem"
         className="object-fill rounded bg-blue-gray-200"
       />
     </div>

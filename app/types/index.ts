@@ -71,3 +71,17 @@ export interface ProductResponse {
   category: string;
   quantity: number;
 }
+
+export interface ProductToUpdate {
+  title: string;
+  description: string;
+  bulletPoints: string[];
+  category: string;
+  quantity: number;
+  price: {
+    base: number;
+    discounted: number;
+  };
+  thumbnail?: { url: string; id: string };
+  images?: { url: string; id: string }[];
+}

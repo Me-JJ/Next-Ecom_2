@@ -34,6 +34,7 @@ export default function Create() {
         thumbnail: thumbnailRes,
         images: productImages,
       });
+      console.log(values.title, " added ");
     } catch (error) {
       if (error instanceof ValidationError) {
         error.inner.map((err) => toast.error(err.message));

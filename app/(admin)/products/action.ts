@@ -2,6 +2,7 @@
 
 import startDb from "@/app/lib/db";
 import ProductModel, { NewProduct } from "@/app/models/productModel";
+import { ProductToUpdate } from "@/app/types";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -37,11 +38,11 @@ export const createProduct = async (info: NewProduct) => {
   }
 };
 
-export const handleImageRemove = async (publicId: string) => {
+export const removeImageFromCloud = async (publicId: string) => {
   try {
     await cloudinary.uploader.destroy(publicId);
   } catch (error) {
-    console.log("handleImageRemove error->", (error as any).message);
+    console.log("removeImageFromCloud", error);
     throw error;
   }
 };
@@ -64,6 +65,28 @@ export const removeAndUpdateProductImage = async (
       "Error while removing image from cloud",
       (error as any).message
     );
+    throw error;
+  }
+};
+
+export const updateProduct = async (
+  id: string,
+  productInfo: ProductToUpdate
+) => {
+  try {
+    await startDb();
+    let images: typeof productInfo.images = [];
+    if (productInfo.images) {
+      images = productInfo.images;
+    }
+    delete productInfo.images;
+
+    await ProductModel.findByIdAndUpdate(id, {
+      ...productInfo,
+      $push: { images },
+    });
+  } catch (error) {
+    console.log("Error while updating the form", (error as any).message);
     throw error;
   }
 };

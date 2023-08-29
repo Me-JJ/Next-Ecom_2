@@ -45,7 +45,7 @@ const defaultValue = {
   category: "",
   quantity: 0,
 };
-
+///////////////////////////////////////////////////////////////////////////
 export default function ProductForm(props: Props) {
   const { onSubmit, onImageRemove, initialValue } = props;
   const [isPending, startTransition] = useTransition();
