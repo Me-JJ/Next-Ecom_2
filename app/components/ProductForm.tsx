@@ -15,10 +15,11 @@ import React, {
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import categories from "@/app/utils/categories";
 import ImageSelector from "@components/ImageSelector";
+import { NewProductInfo } from "../types";
 
 interface Props {
   initialValue?: InitialValue;
-  onSubmit(values: any): void;
+  onSubmit(values: NewProductInfo): void;
 }
 
 export interface InitialValue {
