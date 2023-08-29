@@ -20,6 +20,7 @@ import { NewProductInfo } from "../types";
 interface Props {
   initialValue?: InitialValue;
   onSubmit(values: NewProductInfo): void;
+  onImageRemove?(source: string): void;
 }
 
 export interface InitialValue {
@@ -46,9 +47,9 @@ const defaultValue = {
 };
 
 export default function ProductForm(props: Props) {
-  const { onSubmit, initialValue } = props;
+  const { onSubmit, onImageRemove, initialValue } = props;
   const [isPending, startTransition] = useTransition();
-  const [images, setImages] = useState<File[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [thumbnail, setThumbnail] = useState<File>();
   const [isForUpdate, setIsForUpdate] = useState(false);
   const [productInfo, setProductInfo] = useState({ ...defaultValue });
@@ -81,8 +82,37 @@ export default function ProductForm(props: Props) {
   };
 
   const removeImage = async (index: number) => {
-    const newImages = images.filter((_, idx) => idx !== index);
-    setImages([...newImages]);
+    // console.log(index);
+    if (!productImagesSource) return;
+
+    // If image is from cloud we want to remove it from cloud , local links include blob
+
+    const imageToRemove = productImagesSource[index];
+    // console.log(imageToRemove);
+    const cloudSourceUrl = "https://res.cloudinary.com";
+    if (imageToRemove.startsWith(cloudSourceUrl)) {
+      onImageRemove && onImageRemove(imageToRemove);
+    } else {
+      // If this image is from local state we want to update local state
+      const fileIndexDifference =
+        productImagesSource.length - imageFiles.length; //all images - local images
+      const indexToRemove = index - fileIndexDifference;
+      // console.log(imagesFiles[indexToRemove]);
+
+      const newImageFiles = imageFiles.filter((_, i) => {
+        if (i !== indexToRemove) return true;
+      });
+
+      setImageFiles([...newImageFiles]);
+    }
+
+    //remove images from UI to update page after clicking delete
+    const newImageSource = productImagesSource.filter((_, i) => {
+      if (i !== index) return true;
+    });
+
+    setProductImagesSource([...newImageSource]);
+    // console.log(productImagesSource[index], imagesFiles[index]);
   };
 
   const getBtnTitle = () => {
@@ -104,7 +134,7 @@ export default function ProductForm(props: Props) {
     if (files) {
       const newImages = Array.from(files).map((item) => item);
       const oldImages = productImagesSource || [];
-      setImages([...images, ...newImages]);
+      setImageFiles([...imageFiles, ...newImages]);
       setProductImagesSource([
         ...oldImages,
         ...newImages.map((file) => URL.createObjectURL(file)),
@@ -130,7 +160,7 @@ export default function ProductForm(props: Props) {
       <form
         action={() =>
           startTransition(async () => {
-            await onSubmit({ ...productInfo, images, thumbnail });
+            onSubmit({ ...productInfo, images: imageFiles, thumbnail });
           })
         }
         className="space-y-6"

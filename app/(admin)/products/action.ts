@@ -36,3 +36,34 @@ export const createProduct = async (info: NewProduct) => {
     throw new Error("Something went wrong, can not create product!");
   }
 };
+
+export const handleImageRemove = async (publicId: string) => {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.log("handleImageRemove error->", (error as any).message);
+    throw error;
+  }
+};
+
+export const removeAndUpdateProductImage = async (
+  id: string,
+  publicId: string
+) => {
+  try {
+    const { result } = await cloudinary.uploader.destroy(publicId);
+
+    if (result === "ok") {
+      await startDb();
+      await ProductModel.findByIdAndUpdate(id, {
+        $pull: { images: { id: publicId } },
+      });
+    }
+  } catch (error) {
+    console.log(
+      "Error while removing image from cloud",
+      (error as any).message
+    );
+    throw error;
+  }
+};
