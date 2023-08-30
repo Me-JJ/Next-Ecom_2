@@ -91,6 +91,7 @@ export default function FeaturedProductTable({ products }: Props) {
                         Edit
                       </Link>
                       <Button
+                        className="ml-4"
                         disabled={isPending}
                         onClick={() => {
                           startTransition(async () => {
@@ -101,7 +102,7 @@ export default function FeaturedProductTable({ products }: Props) {
                         ripple={false}
                         variant="text"
                       >
-                        {isPending ? "Deleting" : "Delete"};
+                        {isPending ? "Deleting" : "Delete"}
                       </Button>
                     </div>
                   </td>
