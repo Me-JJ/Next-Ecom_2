@@ -8,7 +8,7 @@ declare module "next-auth" {
     user: SessionUserProfile;
   }
 }
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Creds",

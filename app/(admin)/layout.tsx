@@ -1,30 +1,22 @@
 "use client";
 
-import { redirect } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useEffect } from "react";
 import React, { ReactNode } from "react";
 import AdminSidebar from "../components/AdminSidebar";
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 interface Props {
   children: ReactNode;
 }
 
-export default function AdminLayout({ children }: Props) {
-  const { data: session } = useSession();
+export default async function AdminLayout({ children }: Props) {
+  const session = await getServerSession(authOptions);
 
-  useEffect(() => {
-    if (session) {
-      const isAdmin = session?.user.role === "admin";
-      if (!isAdmin) return redirect("/auth/signin");
-    }
-    if (session === null) {
-      return redirect("/auth/signin");
-    }
-  }, [session]);
+  console.log("layout->", session);
 
-  // console.log("admin->", session);
+  const isAdmin = session?.user.role === "admin";
 
+  if (!isAdmin) return redirect("/auth/signin");
   return (
     <div>
       <AdminSidebar>{children}</AdminSidebar>;
