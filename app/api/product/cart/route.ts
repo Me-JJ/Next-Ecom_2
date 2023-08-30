@@ -9,7 +9,7 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 export const POST = async (req: Request) => {
   try {
     const session = await getServerSession(authOptions);
-    console.log("session product route-->", session);
+    // console.log("session product route-->", session);
     const user = session?.user;
     if (!user) {
       return NextResponse.json(
@@ -18,7 +18,9 @@ export const POST = async (req: Request) => {
       );
     }
     const { productId, quantity } = (await req.json()) as NewCartRequest;
-    if (!isValidObjectId(productId) || !isNaN(quantity))
+
+    // console.log("prod,quat", productId, quantity);
+    if (!isValidObjectId(productId) || isNaN(quantity))
       return NextResponse.json({ error: "Invalid Request!" }, { status: 401 });
 
     await startDb();
@@ -58,7 +60,7 @@ export const POST = async (req: Request) => {
 
     //add new item if it does't exists
   } catch (error) {
-    console.log("route->", error);
+    console.log("product cart route->", error);
     return NextResponse.json(
       { error: (error as any).message },
       { status: 500 }

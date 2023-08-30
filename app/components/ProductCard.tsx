@@ -11,6 +11,10 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import truncate from "truncate";
+import useAuth from "../hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { useTransition } from "react";
 
 interface Props {
   product: {
@@ -28,6 +32,23 @@ interface Props {
 }
 
 export default function ProductCard({ product }: Props) {
+  const { loggedIn } = useAuth();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const addToCart = async () => {
+    if (!loggedIn) {
+      router.push("/auth/signin");
+      toast.success("Login into your account!");
+    }
+    const res = await fetch("/api/product/cart", {
+      method: "POST",
+      body: JSON.stringify({ productId: product.id, quantity: 1 }),
+    });
+
+    const { error } = await res.json();
+    if (!res.ok && error) toast.error(error);
+  };
+
   return (
     <Card className="w-full">
       <Link className="w-full" href={`/${product.title}/${product.id}`}>
@@ -62,13 +83,18 @@ export default function ProductCard({ product }: Props) {
       </Link>
       <CardFooter className="pt-0 space-y-4">
         <Button
+          onClick={() => {
+            startTransition(async () => await addToCart());
+          }}
           ripple={false}
           fullWidth={true}
           className="bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:shadow-none hover:scale-105 focus:shadow-none focus:scale-105 active:scale-100"
+          disabled={isPending}
         >
           Add to Cart
         </Button>
         <Button
+          disabled={isPending}
           ripple={false}
           fullWidth={true}
           className="bg-blue-400 text-white shadow-none hover:shadow-none hover:scale-105 focus:shadow-none focus:scale-105 active:scale-100"

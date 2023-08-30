@@ -3,13 +3,17 @@
 import React, { useState, useTransition } from "react";
 import { Button } from "@material-tailwind/react";
 import CartCountUpdater from "@components/CartCountUpdater";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import useAuth from "../hooks/useAuth";
+import { toast } from "react-toastify";
 
 export default function BuyingOptions() {
   const [quantity, setQuantity] = useState(1);
   const [isPending, startTransition] = useTransition();
   const { product } = useParams();
   const productId = product[1];
+  const { loggedIn } = useAuth();
+  const router = useRouter();
 
   const handleIncrement = () => {
     setQuantity((prevCount) => prevCount + 1);
@@ -21,8 +25,14 @@ export default function BuyingOptions() {
   };
 
   const addToCart = async () => {
-    if (!productId) return;
+    if (!productId) {
+      return;
+    }
 
+    if (!loggedIn) {
+      router.push("/auth/signin");
+      toast.success("Login into your account!");
+    }
     const res = await fetch("/api/product/cart", {
       method: "POST",
       body: JSON.stringify({ productId, quantity }),
@@ -44,10 +54,11 @@ export default function BuyingOptions() {
           startTransition(async () => await addToCart());
         }}
         variant="text"
+        disabled={isPending}
       >
         Add to Cart
       </Button>
-      <Button color="amber" className="rounded-full">
+      <Button color="amber" className="rounded-full" disabled={isPending}>
         Buy Now
       </Button>
     </div>
