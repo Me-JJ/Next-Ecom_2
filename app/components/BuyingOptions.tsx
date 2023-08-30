@@ -38,8 +38,8 @@ export default function BuyingOptions() {
       body: JSON.stringify({ productId, quantity }),
     });
 
-    const data = await res.json();
-    console.log(data);
+    const { error } = await res.json();
+    if (!res.ok && error) toast.error(error);
   };
   return (
     <div className="flex items-center space-x-2">

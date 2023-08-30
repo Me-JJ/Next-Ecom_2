@@ -3,6 +3,8 @@ import startDb from "../lib/db";
 import ProductModel from "../models/productModel";
 import GridView from "../components/GridView";
 import ProductCard from "../components/ProductCard";
+import FeaturedProductsSlider from "../components/FeatureProductSlider";
+import FeaturedProductModel from "../models/featuredProducts";
 
 interface latestProducts {
   id: any;
@@ -35,14 +37,34 @@ const fetLatestProducts = async () => {
 
   return JSON.stringify(productList);
 };
+
+const fetFeaturedProducts = async () => {
+  await startDb();
+  const products = await FeaturedProductModel.find().sort("-createdAt");
+
+  return products.map((product) => {
+    return {
+      id: product.id.toString(),
+      title: product.title,
+      link: product.link,
+      linkTitle: product.linkTitle,
+      banner: product.banner.url,
+    };
+  });
+};
+
 export default async function Home() {
   const latestProducts = await fetLatestProducts();
   const parsedProducts = JSON.parse(latestProducts) as latestProducts[];
+  const featuredProducts = await fetFeaturedProducts();
   return (
-    <GridView>
-      {parsedProducts.map((product) => {
-        return <ProductCard product={product} key={product.id} />;
-      })}
-    </GridView>
+    <div className="space-y-4">
+      <FeaturedProductsSlider products={featuredProducts} />
+      <GridView>
+        {parsedProducts.map((product) => {
+          return <ProductCard product={product} key={product.id} />;
+        })}
+      </GridView>
+    </div>
   );
 }

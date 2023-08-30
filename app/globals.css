@@ -2,3 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.slick-next::before,
+.slick-prev::before {
+  color: #000 !important;
+}
+
+.slick-dots {
+  bottom: 6px !important;
+}

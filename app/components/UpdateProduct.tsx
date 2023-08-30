@@ -11,12 +11,14 @@ import { NewProductInfo } from "../types";
 import { updateProductInfoSchema } from "../utils/validationSchema";
 import { ValidationError } from "yup";
 import { toast } from "react-toastify";
-import { uploadImage } from "../utils/helper";
+import { extractPublicId, uploadImage } from "../utils/helper";
+import { useRouter } from "next/navigation";
 interface props {
   product: ProductResponse;
 }
 
 export default function UpdateProduct({ product }: props) {
+  const router = useRouter();
   const initialValue: InitialValue = {
     ...product,
     thumbnail: product.thumbnail.url,
@@ -30,7 +32,7 @@ export default function UpdateProduct({ product }: props) {
     // console.log("source->", source);
     // console.log(source.split("/"));
 
-    const publicId = source.split("/").slice(-1)[0].split(".")[0]; // getting the public id from source
+    const publicId = extractPublicId(source); // getting the public id from source
 
     removeAndUpdateProductImage(product.id, publicId);
   };
@@ -67,6 +69,8 @@ export default function UpdateProduct({ product }: props) {
 
       //update our product
       await updateProduct(product.id, dataToUpdate);
+      router.refresh();
+      router.push("/products");
     } catch (error) {
       if (error instanceof ValidationError) {
         error.inner.map((err) => toast.error(err.message));

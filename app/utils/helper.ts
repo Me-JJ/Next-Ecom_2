@@ -21,3 +21,8 @@ export const uploadImage = async (file: File) => {
 
   return { url: data.secure_url, id: data.public_id };
 };
+
+export const extractPublicId = (url: string) => {
+  // getting the public id from source
+  return url.split("/").slice(-1)[0].split(".")[0];
+};
