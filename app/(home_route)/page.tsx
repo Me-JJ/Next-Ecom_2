@@ -5,6 +5,7 @@ import GridView from "../components/GridView";
 import ProductCard from "../components/ProductCard";
 import FeaturedProductsSlider from "../components/FeatureProductSlider";
 import FeaturedProductModel from "../models/featuredProducts";
+import HorizontalMenu from "../components/HorizontalMenu";
 
 interface latestProducts {
   id: any;
@@ -60,6 +61,7 @@ export default async function Home() {
   return (
     <div className="space-y-4">
       <FeaturedProductsSlider products={featuredProducts} />
+      <HorizontalMenu />
       <GridView>
         {parsedProducts.map((product) => {
           return <ProductCard product={product} key={product.id} />;
