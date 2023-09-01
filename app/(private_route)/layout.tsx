@@ -1,25 +1,21 @@
-"use client";
-
-import React, { ReactNode } from "react";
-import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import EmailVerificationBanner from "../components/EmailVerificationBanner";
-import Navbar from "../components/navbar";
+import React, { ReactNode } from "react";
+import Navbar from "@components/navbar";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+
 interface Props {
   children: ReactNode;
 }
 
-export default function PrivateLayout({ children }: Props) {
-  const { data: session } = useSession();
-  // console.log("session -=--=->", session);
-  if (!session) {
-    return redirect("/auth/signin");
-  }
-  console.log("layout->", session);
+export default async function PrivateLayout({ children }: Props) {
+  const session = await getServerSession(authOptions);
+  if (!session) return redirect("/auth/signin");
+
   return (
     <div className="max-w-screen-xl mx-auto p-4 xl:p-0">
       <Navbar />
-      <EmailVerificationBanner />
+
       {children}
     </div>
   );
