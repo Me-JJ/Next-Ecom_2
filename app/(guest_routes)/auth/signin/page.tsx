@@ -42,6 +42,10 @@ export default function SignIn() {
       if (signInRes?.error === "CredentialsSignin") {
         toast.error("Email/Password mismatch!");
       }
+      if (signInRes?.error) {
+        router.refresh();
+      }
+      router.push("/");
     },
   });
 

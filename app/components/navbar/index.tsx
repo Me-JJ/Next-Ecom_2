@@ -58,7 +58,7 @@ export default async function Navbar() {
 
   return (
     <div>
-      <NavUI cartItemsCount={cartItemsCount} />
+      <NavUI cartItemsCount={cartItemsCount} avatar={profile?.avatar} />
     </div>
   );
 }

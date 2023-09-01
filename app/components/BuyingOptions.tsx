@@ -40,6 +40,9 @@ export default function BuyingOptions() {
 
     const { error } = await res.json();
     if (!res.ok && error) toast.error(error);
+
+    router.refresh();
+    toast.success("added to cart");
   };
   return (
     <div className="flex items-center space-x-2">
