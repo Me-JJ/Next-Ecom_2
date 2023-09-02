@@ -3,6 +3,7 @@ import { getCartItems } from "@/app/lib/CartHelper";
 import CartModel from "@/app/models/cartModel";
 import OrderModel from "@/app/models/orderModel";
 import ProductModel from "@/app/models/productModel";
+import { CartProduct, StripeCustomer } from "@/app/types";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -31,54 +32,83 @@ export const POST = async (req: Request) => {
     );
   }
   // console.log("------->", event.type);
-  if (event.type === "checkout.session.completed") {
-    const stripeSession = event.data.object as {
-      customer: string;
-      payment_intent: string;
-      amount_subtotal: number;
-      customer_details: any;
-      payment_status: string;
-    };
-    const customer = (await stripe.customers.retrieve(
-      stripeSession.customer
-    )) as unknown as {
-      metadata: {
-        userId: string;
-        cartId: string;
-        type: "checkout";
+
+  try {
+    if (event.type === "checkout.session.completed") {
+      const stripeSession = event.data.object as {
+        customer: string;
+        payment_intent: string;
+        amount_subtotal: number;
+        customer_details: any;
+        payment_status: string;
       };
-    };
-    const { cartId, userId, type } = customer.metadata;
+      const customer = (await stripe.customers.retrieve(
+        stripeSession.customer
+      )) as unknown as StripeCustomer;
 
-    if (type === "checkout") {
-      const cartItems = await getCartItems(userId, cartId);
-      OrderModel.create({
-        userId,
-        stripeCustomerId: stripeSession.customer,
-        paymentIntent: stripeSession.payment_intent,
-        totalAmount: stripeSession.amount_subtotal / 100,
-        shippingDetails: {
-          address: stripeSession.customer_details.address,
-          email: stripeSession.customer_details.email,
-          name: stripeSession.customer_details.name,
-        },
-        paymentStatus: stripeSession.payment_status,
-        deliveryStatus: "ordered",
-        orderItems: cartItems.products,
-      });
+      const { cartId, userId, type, product } = customer.metadata;
 
-      //recount our stock
-      const updateProductPromises = cartItems.products.map(async (product) => {
-        return await ProductModel.findByIdAndUpdate(product.id, {
-          $inc: { quantity: -product.qty },
+      if (type === "checkout") {
+        const cartItems = await getCartItems(userId, cartId);
+        OrderModel.create({
+          userId,
+          stripeCustomerId: stripeSession.customer,
+          paymentIntent: stripeSession.payment_intent,
+          totalAmount: stripeSession.amount_subtotal / 100,
+          shippingDetails: {
+            address: stripeSession.customer_details.address,
+            email: stripeSession.customer_details.email,
+            name: stripeSession.customer_details.name,
+          },
+          paymentStatus: stripeSession.payment_status,
+          deliveryStatus: "ordered",
+          orderItems: cartItems.products,
         });
-      });
 
-      await Promise.all(updateProductPromises);
+        //recount our stock
+        const updateProductPromises = cartItems.products.map(
+          async (product) => {
+            return await ProductModel.findByIdAndUpdate(product.id, {
+              $inc: { quantity: -product.qty },
+            });
+          }
+        );
 
-      await CartModel.findByIdAndDelete(cartId);
+        await Promise.all(updateProductPromises);
+
+        await CartModel.findByIdAndDelete(cartId);
+      }
+      if (type === "instant-checkout") {
+        const productInfo = JSON.parse(product) as unknown as CartProduct;
+        OrderModel.create({
+          userId,
+          stripeCustomerId: stripeSession.customer,
+          paymentIntent: stripeSession.payment_intent,
+          totalAmount: stripeSession.amount_subtotal / 100,
+          shippingDetails: {
+            address: stripeSession.customer_details.address,
+            email: stripeSession.customer_details.email,
+            name: stripeSession.customer_details.name,
+          },
+          paymentStatus: stripeSession.payment_status,
+          deliveryStatus: "ordered",
+          orderItems: [{ ...productInfo }],
+        });
+
+        //recount our stock
+        await ProductModel.findByIdAndUpdate(productInfo.id, {
+          $inc: { quantity: -1 },
+        });
+      }
     }
-  }
 
-  return NextResponse.json({ received: true });
+    return NextResponse.json({});
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: "Something went wrong, can not create order!",
+      },
+      { status: 500 }
+    );
+  }
 };

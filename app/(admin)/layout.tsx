@@ -12,7 +12,7 @@ interface Props {
 export default async function AdminLayout({ children }: Props) {
   const session = await getServerSession(authOptions);
 
-  console.log("layout adminlayout->", session);
+  // console.log("layout adminlayout->", session);
 
   const isAdmin = session?.user.role === "admin";
 

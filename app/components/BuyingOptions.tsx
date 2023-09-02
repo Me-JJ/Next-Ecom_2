@@ -59,10 +59,10 @@ export default function BuyingOptions() {
         variant="text"
         disabled={isPending}
       >
-        Add to Cart
+        {isPending ? "Processing" : "Add to Cart"}
       </Button>
       <Button color="amber" className="rounded-full" disabled={isPending}>
-        Buy Now
+        {isPending ? "Processing" : "Buy Now"}
       </Button>
     </div>
   );
