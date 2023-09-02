@@ -4,6 +4,8 @@ import startDb from "@/app/lib/db";
 import CartModel from "@/app/models/cartModel";
 import { Types } from "mongoose";
 import { getServerSession } from "next-auth";
+import { FaceFrownIcon } from "@heroicons/react/24/outline";
+
 import React from "react";
 
 const fetchCartProducts = async () => {
@@ -69,7 +71,21 @@ const fetchCartProducts = async () => {
 };
 export default async function Cart() {
   const cart = await fetchCartProducts();
-  if (!cart) return <>Not found</>;
+  if (!cart)
+    return (
+      <div className="py-4">
+        <div className="mb-4">
+          <h1 className="text-2xl font-semibold">Your Cart Details </h1>
+          <hr />
+        </div>
+        <div className="flex justify-center items-center">
+          <h1 className="font-semibold text-2xl opacity-50 py-5">
+            Your Cart is Empty
+          </h1>
+          <FaceFrownIcon className="h-10 w-10 text-gray-500 " />
+        </div>
+      </div>
+    );
 
   return (
     <div>
