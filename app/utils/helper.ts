@@ -22,6 +22,15 @@ export const uploadImage = async (file: File) => {
   return { url: data.secure_url, id: data.public_id };
 };
 
+export const formatPrice = (amount: number) => {
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "INR",
+  });
+
+  return formatter.format(amount);
+};
+
 export const extractPublicId = (url: string) => {
   // getting the public id from source
   return url.split("/").slice(-1)[0].split(".")[0];
