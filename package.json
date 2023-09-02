@@ -25,6 +25,7 @@
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
     "formik": "^2.4.3",
+    "micro": "^10.0.1",
     "mongoose": "^7.4.5",
     "next": "13.4.19",
     "next-auth": "^0.0.0-manual.ffd05533",
