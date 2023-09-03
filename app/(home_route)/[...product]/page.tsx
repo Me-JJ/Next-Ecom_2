@@ -1,10 +1,13 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import ProductView from "@/app/components/ProductView";
 import ReviewsList from "@/app/components/ReviewList";
 import SimilarProductsList from "@/app/components/SimilarProductsList";
 import startDb from "@/app/lib/db";
+import { updateOrCreateHistory } from "@/app/models/historyModel";
 import ProductModel from "@/app/models/productModel";
 import ReviewModel from "@/app/models/reviewModel";
 import { ObjectId, isValidObjectId } from "mongoose";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -22,6 +25,11 @@ const fetchProduct = async (productId: string) => {
 
   const product = await ProductModel.findById(productId);
   if (!product) return redirect("/404");
+
+  const session = await getServerSession(authOptions);
+
+  if (session?.user)
+    await updateOrCreateHistory(session.user.id, product._id.toString());
 
   return JSON.stringify({
     id: product.id.toString(),
