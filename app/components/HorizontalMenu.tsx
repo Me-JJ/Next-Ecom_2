@@ -1,7 +1,7 @@
 "use client";
 import { Chip } from "@material-tailwind/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
-import React, { useContext } from "react";
+import React, { ReactNode, useContext } from "react";
 // @ts-ignore
 import { ScrollMenu, VisibilityContext } from "react-horizontal-scrolling-menu";
 import categories from "../utils/categories";
@@ -40,15 +40,14 @@ function RightArrow() {
   );
 }
 
-export default function HorizontalMenu() {
+interface Props {
+  children: JSX.Element | JSX.Element[];
+}
+export default function HorizontalMenu({ children }: Props) {
   return (
     <div>
       <ScrollMenu LeftArrow={LeftArrow} RightArrow={RightArrow}>
-        {categories.map((c) => (
-          <Link key={c} href={`/browse-products/${c}`}>
-            <Chip color="teal" className="mr-2" variant="outlined" value={c} />
-          </Link>
-        ))}
+        {children}
       </ScrollMenu>
     </div>
   );

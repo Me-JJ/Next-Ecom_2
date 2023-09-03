@@ -1,5 +1,6 @@
 import ProductView from "@/app/components/ProductView";
 import ReviewsList from "@/app/components/ReviewList";
+import SimilarProductsList from "@/app/components/SimilarProductsList";
 import startDb from "@/app/lib/db";
 import ProductModel from "@/app/models/productModel";
 import ReviewModel from "@/app/models/reviewModel";
@@ -32,6 +33,7 @@ const fetchProduct = async (productId: string) => {
     price: product.price,
     sale: product.sale,
     rating: product.rating,
+    outOfStock: product.quantity <= 0,
   });
 };
 
@@ -59,6 +61,19 @@ const fetchProductReviews = async (productId: string) => {
   return JSON.stringify(result);
 };
 
+const fetchSimilarProducts = async () => {
+  await startDb();
+  const products = await ProductModel.find().sort({ rating: -1 }).limit(10);
+  return products.map(({ _id, thumbnail, title, price }) => {
+    return {
+      id: _id.toString(),
+      title,
+      thumbnail: thumbnail.url,
+      price: price.discounted,
+    };
+  });
+};
+
 export default async function Product({ params }: Props) {
   const { product } = params;
   const productId = product[1];
@@ -69,6 +84,7 @@ export default async function Product({ params }: Props) {
   }
 
   const reviews = await fetchProductReviews(productId);
+  const similarProducts = await fetchSimilarProducts();
   return (
     <div className="p-4">
       <ProductView
@@ -79,7 +95,10 @@ export default async function Product({ params }: Props) {
         points={productInfo.bulletPoints}
         images={productImages}
         rating={productInfo.rating}
+        outOfStock={productInfo.outOfStock}
       />
+
+      <SimilarProductsList products={similarProducts} />
 
       <div className="py-4 space-y-4">
         <div className="flex justify-between items-center">

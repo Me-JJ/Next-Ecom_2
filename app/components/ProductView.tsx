@@ -11,6 +11,7 @@ interface Props {
   price: { base: number; discounted: number };
   sale: number;
   rating: number;
+  outOfStock: boolean;
 }
 
 const formatPrice = (amount: number) => {
@@ -30,6 +31,7 @@ export default function ProductView({
   price,
   sale,
   rating,
+  outOfStock,
 }: Props) {
   return (
     <div className="flex lg:flex-row flex-col md:gap-4 gap-2">
@@ -61,7 +63,13 @@ export default function ProductView({
         </div>
 
         <div className="flex py-4">
-          <BuyingOptions />
+          {outOfStock ? (
+            <div className="uppercase text-gray-700 font-semibold">
+              Out of stock
+            </div>
+          ) : (
+            <BuyingOptions />
+          )}
         </div>
       </div>
     </div>
