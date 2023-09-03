@@ -15,6 +15,7 @@ import useAuth from "../hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useTransition } from "react";
+import Rating from "./Rating";
 
 interface Props {
   product: {
@@ -23,6 +24,7 @@ interface Props {
     description: string;
     category: string;
     thumbnail: string;
+    rating?: number;
     sale: number;
     price: {
       base: number;
@@ -87,6 +89,11 @@ export default function ProductCard({ product }: Props) {
             <h3 className="line-clamp-1 font-medium text-blue-gray-800">
               {truncate(product.title, 50)}
             </h3>
+            <div className="flex justify-end">
+              {product.rating ? (
+                <Rating value={parseFloat(product.rating.toFixed(1))} />
+              ) : null}
+            </div>
           </div>
           <div className="flex justify-end items-center space-x-2 mb-2">
             <Typography color="blue-gray" className="font-medium line-through">

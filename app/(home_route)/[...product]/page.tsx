@@ -31,6 +31,7 @@ const fetchProduct = async (productId: string) => {
     bulletPoints: product.bulletPoints,
     price: product.price,
     sale: product.sale,
+    rating: product.rating,
   });
 };
 
@@ -77,6 +78,7 @@ export default async function Product({ params }: Props) {
         sale={productInfo.sale}
         points={productInfo.bulletPoints}
         images={productImages}
+        rating={productInfo.rating}
       />
 
       <div className="py-4 space-y-4">
