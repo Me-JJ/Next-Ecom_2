@@ -14,7 +14,7 @@ interface Props {
 const fetchReview = async (productId: string) => {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
-    toast.warn("Login to your account to add reviews.");
+    // toast.warn("Login to your account to add reviews.");
     return redirect("/auth/signin");
   }
 

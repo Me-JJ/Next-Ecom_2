@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function ReviewsList({ reviews }: Props) {
-  console.log(reviews);
+  // console.log(reviews);
   return (
     <div className="space-y-4">
       {reviews.map((review) => {
