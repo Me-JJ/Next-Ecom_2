@@ -134,3 +134,9 @@ export interface StripeCustomer {
     product: string;
   };
 }
+
+export interface ReviewRequestBody {
+  productId: string;
+  comment?: string;
+  rating: number;
+}
