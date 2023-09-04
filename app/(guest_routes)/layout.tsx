@@ -9,7 +9,7 @@ interface Props {
 
 export default async function GuestLayout({ children }: Props) {
   const session = await getServerSession(authOptions);
-  console.log("guest-route layout -> ", session);
+  // console.log("guest-route layout -> ", session);
   if (session) {
     return redirect("/");
   }
