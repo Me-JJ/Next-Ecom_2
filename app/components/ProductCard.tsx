@@ -59,7 +59,7 @@ export default function ProductCard({ product }: Props) {
   const addToCart = async () => {
     if (!loggedIn) {
       router.push("/auth/signin");
-      toast.success("Login into your account!");
+      toast.warn("Login into your account!");
     }
     const res = await fetch("/api/product/cart", {
       method: "POST",
@@ -70,7 +70,6 @@ export default function ProductCard({ product }: Props) {
     if (!res.ok && error) toast.error(error);
 
     router.refresh();
-    toast.success("added to cart");
   };
 
   return (

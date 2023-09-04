@@ -24,12 +24,19 @@ export interface Orders {
 }
 
 export default function OrderListPublic({ orders }: { orders: Orders[] }) {
+  if (orders.length === 0) {
+    return (
+      <div className="animate-pulse text-5xl text-center text-gray-500 p-10 m-auto font-semibold">
+        Order something!
+      </div>
+    );
+  }
   return (
     <div>
       {orders.map((order) => {
         return (
           <div key={order.id} className="py-4 space-y-4">
-            <div className="flex justify-between items-center bg-blue-gray-400 text-white p-2">
+            <div className="flex justify-between items-center blue-gray-400 text-white p-2">
               <p>Ordered Date : {dateFormat(order.date, "dd / mm / yyyy")}</p>
               <p>Total : {formatPrice(order.total)}</p>
               <Chip value={order.paymentStatus} color="amber" />

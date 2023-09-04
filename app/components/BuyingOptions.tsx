@@ -61,6 +61,23 @@ export default function BuyingOptions({ wishlist }: Props) {
     router.refresh();
   };
 
+  const handleCheckout = async () => {
+    const res = await fetch("/api/checkout/instant", {
+      method: "POST",
+      body: JSON.stringify({ productId: productId }),
+    });
+
+    const { error, url } = await res.json();
+
+    if (!res.ok && error) {
+      toast.error(error);
+    } else {
+      //open the checkout url
+      window.location.href = url;
+    }
+    // router.push("/profile/orders");
+  };
+
   return (
     <div className="flex items-center space-x-2">
       <CartCountUpdater
@@ -78,7 +95,14 @@ export default function BuyingOptions({ wishlist }: Props) {
       >
         Add to Cart
       </Button>
-      <Button disabled={isPending} color="amber" className="rounded-full">
+      <Button
+        onClick={() => {
+          startTransition(async () => await handleCheckout());
+        }}
+        disabled={isPending}
+        color="amber"
+        className="rounded-full"
+      >
         Buy Now
       </Button>
 

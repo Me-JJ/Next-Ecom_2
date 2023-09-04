@@ -1,14 +1,12 @@
-import Image from "next/image";
-import startDb from "../../../lib/db";
-import ProductModel from "../../../models/productModel";
-import GridView from "../../../components/GridView";
-import ProductCard from "../../../components/ProductCard";
-import FeaturedProductsSlider from "../../../components/FeatureProductSlider";
-import FeaturedProductModel from "../../../models/featuredProducts";
-import HorizontalMenu from "../../../components/HorizontalMenu";
+import React from "react";
+import startDb from "@/app/lib/db";
+import ProductModel from "@/app/models/productModel";
+import GridView from "@components/GridView";
+import ProductCard from "@components/ProductCard";
+import CategoryMenu from "@/app/components/CategoryMenu";
 
-interface latestProducts {
-  id: any;
+interface LatestProduct {
+  id: string;
   title: string;
   description: string;
   category: string;
@@ -28,7 +26,7 @@ const fetchProductsByCategory = async (category: string) => {
 
   const productList = products.map((product) => {
     return {
-      id: product.id.toString(),
+      id: product._id.toString(),
       title: product.title,
       description: product.description,
       category: product.category,
@@ -44,23 +42,25 @@ const fetchProductsByCategory = async (category: string) => {
 interface Props {
   params: { category: string };
 }
+
 export default async function ProductByCategory({ params }: Props) {
   const products = await fetchProductsByCategory(
     decodeURIComponent(params.category)
   );
-  const parsedProducts = JSON.parse(products) as latestProducts[];
+  const parsedProducts = JSON.parse(products) as LatestProduct[];
+
   return (
-    <div className="space-y-4">
-      <HorizontalMenu />
+    <div className="py-4 space-y-4">
+      <CategoryMenu />
       {parsedProducts.length ? (
         <GridView>
           {parsedProducts.map((product) => {
-            return <ProductCard product={product} key={product.id} />;
+            return <ProductCard key={product.id} product={product} />;
           })}
         </GridView>
       ) : (
         <h1 className="text-center pt-10 font-semibold text-2xl opacity-40">
-          Sorry there are no products in this category
+          Sorry there are no products in this category!
         </h1>
       )}
     </div>
