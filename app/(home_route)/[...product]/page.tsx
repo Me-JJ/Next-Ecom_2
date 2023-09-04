@@ -6,6 +6,7 @@ import startDb from "@/app/lib/db";
 import { updateOrCreateHistory } from "@/app/models/historyModel";
 import ProductModel from "@/app/models/productModel";
 import ReviewModel from "@/app/models/reviewModel";
+import WishlistModel from "@/app/models/wishlistModel";
 import { ObjectId, isValidObjectId } from "mongoose";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
@@ -26,10 +27,18 @@ const fetchProduct = async (productId: string) => {
   const product = await ProductModel.findById(productId);
   if (!product) return redirect("/404");
 
+  let isWishlist = false;
+
   const session = await getServerSession(authOptions);
 
-  if (session?.user)
+  if (session?.user) {
     await updateOrCreateHistory(session.user.id, product._id.toString());
+    const wishlist = await WishlistModel.findOne({
+      user: session.user.id,
+      products: product._id,
+    });
+    isWishlist = wishlist ? true : false;
+  }
 
   return JSON.stringify({
     id: product.id.toString(),
@@ -42,6 +51,7 @@ const fetchProduct = async (productId: string) => {
     sale: product.sale,
     rating: product.rating,
     outOfStock: product.quantity <= 0,
+    isWishlist,
   });
 };
 
@@ -104,6 +114,7 @@ export default async function Product({ params }: Props) {
         images={productImages}
         rating={productInfo.rating}
         outOfStock={productInfo.outOfStock}
+        isWishlist={productInfo.isWishlist}
       />
 
       <SimilarProductsList products={similarProducts} />
