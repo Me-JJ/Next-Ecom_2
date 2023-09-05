@@ -18,13 +18,10 @@ export const authOptions: NextAuthOptions = {
 
         const { email, password } = credentials as SignInCredentials;
         //send req to you api route to sign in and send err n success
-        const { user, error } = await fetch(
-          "http://localhost:3000/api/users/signin",
-          {
-            method: "POST",
-            body: JSON.stringify({ email, password }),
-          }
-        ).then(async (res) => await res.json());
+        const { user, error } = await fetch(process.env.AUTH_SIGNIN_ENDPOINT!, {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+        }).then(async (res) => await res.json());
 
         if (error) {
           return null;

@@ -86,7 +86,7 @@ export const GET = async (req: Request) => {
       token,
     });
 
-    const verificationURL = `${process.env.NEXTAUTH_URL}verify?token=${token}&userId=${userId}`;
+    const verificationURL = `${process.env.VERIFICATION_URL}?token=${token}&userId=${userId}`;
 
     await sendEmail({
       profile: { name: user.name, email: user.email },
